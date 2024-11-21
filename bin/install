@@ -78,7 +78,6 @@ install_luaJIT() {
     # the install leaves some references to the build dir; remove them:
     local file
     for file in $ASDF_INSTALL_PATH/luarocks/bin/{luarocks,luarocks-admin}; do
-      echo sed -i.bak "s|${source_dir}/src/?.lua;||" "$file"
       sed -i.bak "s|${source_dir}/src/?.lua;||" "$file"
       rm "$file.bak"
     done
@@ -104,14 +103,7 @@ construct_lua_rocks_configure_options() {
   if [ "$LUAROCKS_CONFIGURE_OPTIONS" = "" ]; then
     local luaJIT_include_version="$(ls $install_path/include | head -1)"
     local luaJIT_include_path="$install_path/include/$luaJIT_include_version"
-    local configure_options=(
-      "$(os_based_lua_rocks_configure_options)"
-      "--with-lua=$install_path"
-      "--with-lua-include=$luaJIT_include_path"
-      "--with-lua-lib=$install_path/lib"
-      "--prefix=$install_path/luarocks"
-      "--lua-suffix=jit"
-    )
+    local configure_options="$(os_based_lua_rocks_configure_options) --with-lua=$install_path --with-lua-include=$luaJIT_include_path --with-lua-lib=$install_path/lib --prefix=$install_path/luarocks --lua-suffix=jit"
 
     if [ "$LUAROCKS_EXTRA_CONFIGURE_OPTIONS" != "" ]; then
       configure_options="$configure_options $LUAROCKS_EXTRA_CONFIGURE_OPTIONS"
